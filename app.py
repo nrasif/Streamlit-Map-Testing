@@ -23,6 +23,7 @@ import streamlit as st
 from st_aggrid import AgGrid
 from streamlit_folium import folium_static
 import streamlit_nested_layout
+from streamlit_disqus import st_disqus
 
 
 
@@ -165,7 +166,7 @@ def main():
         st.markdown('<p class="other-font"> &nbsp; </p>',
                     unsafe_allow_html=True)
 
-        tab1, tab2 = st.tabs(['Info', 'Filter'])
+        tab1, tab2, tab3 = st.tabs(['Info', 'Filter', 'Download'])
 
         with tab1:
             
@@ -235,14 +236,21 @@ def main():
                 
                 if checkbox_stat_1:
                     option_block_ = option_block_[option_block_['Status'] == 'Exploration']
-                if checkbox_stat_2:
+                elif checkbox_stat_2:
                     option_block_ = option_block_[option_block_['Status'] == 'Production']
-                if checkbox_stat_1 and checkbox_stat_2:
+                elif checkbox_stat_1 and checkbox_stat_2:
                     option_block_ = All_Blocks[All_Blocks['Status'].isin(['Exploration','Production'])]
                 
             st.markdown('<p class="big-font"> &nbsp; </p>',
             unsafe_allow_html=True)
             
+            with st.expander('Operator'):
+                option_operator = st.multiselect(' ', (option_block_['Operator'].unique()), default = option_block_['Operator'].unique(), label_visibility='collapsed')
+                option_block_ = option_block_[option_block_['Operator'].isin(option_operator)]
+            
+            st.markdown('<p class="big-font"> &nbsp; </p>',
+            unsafe_allow_html=True)
+
             with st.expander('Shape area in Sq. Kilometers'):
                 st.markdown('<p class="big-font"> &nbsp; </p>',
                             unsafe_allow_html=True)
@@ -250,7 +258,19 @@ def main():
                                         label_visibility='collapsed')
             
                 option_block_ = option_block_[option_block_['Sq. Kilometers'] <= option_kilos]
+        
+        with tab3:
+            @st.cache
+            def convert_csv(df):
+                return df.to_csv().encode('utf-8')
             
+            csv = convert_csv(option_block_)
+            
+            st.download_button(
+                label='Download data as CSV',
+                data=csv,
+                file_name='Data_map.csv'
+            )
             
     with display:
         st.markdown('<p class="spacing-font"> &nbsp; </p>',
