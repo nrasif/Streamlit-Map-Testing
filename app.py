@@ -23,8 +23,6 @@ import streamlit as st
 from streamlit_folium import folium_static
 import streamlit_nested_layout
 
-
-
 def main():
 
     # Dataset
