@@ -249,7 +249,7 @@ with text:
         with st.expander('Shape area in Sq. Kilometers'):
             st.markdown('<p class="big-font"> &nbsp; </p>',
                         unsafe_allow_html=True)
-            option_kilos = st.slider('Sq. Kilometers of block area', 0.0, option_block_['Sq. Kilometers'].max() + 50, option_block_['Sq. Kilometers'].max(), 
+            option_kilos = st.slider('Sq. Kilometers of block area', float(0.0), float(option_block_['Sq. Kilometers'].max() + 50), float(option_block_['Sq. Kilometers'].max()), 
                                     label_visibility='collapsed')
         
             option_block_ = option_block_[option_block_['Sq. Kilometers'] <= option_kilos]
