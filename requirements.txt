@@ -1,7 +1,5 @@
-folium
-streamlit
-streamlit-folium
-streamlit-nested-layout
+folium==0.14.0
+streamlit==1.17.0
 numpy==1.23.5
 pandas==1.5.2
 geopandas==0.12.2
