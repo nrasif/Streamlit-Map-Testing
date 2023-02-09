@@ -5,6 +5,5 @@ streamlit-nested-layout
 numpy==1.23.5
 pandas==1.5.2
 geopandas==0.12.2
-geos==3.8.0
 plotly==5.13.0
 matplotlib==3.6.2
