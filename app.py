@@ -299,27 +299,25 @@ with display:
     df_filter = filter_by_name(option_block_,option_block)
     
     # Adding blocks to the main map
-    def load_map(df_):
-        for i, row in df_.iterrows():
-            geo_json = folium.features.GeoJson(row.geometry.__geo_interface__, name=str(i), 
-                                                style_function=
-                                                lambda feature: {
-                                                'fillColor':  '#65b3d0',
-                                                #    'fillColor': '#F1D581' if 'x' in feature['properties']['Status'] == 'Exploration' else '#65b3d0',
-                                                'color': 'black',
-                                                'weight': 3,
-                                                'fillOpacity': 0.2,
-                                                'dashArray': '5,5'
-                                            },
+    for i, row in df_filter.iterrows():
+        geo_json = folium.features.GeoJson(row.geometry.__geo_interface__, name=str(i), 
+                                            style_function=
+                                            lambda feature: {
+                                            'fillColor':  '#65b3d0',
+                                            #    'fillColor': '#F1D581' if 'x' in feature['properties']['Status'] == 'Exploration' else '#65b3d0',
+                                            'color': 'black',
+                                            'weight': 3,
+                                            'fillOpacity': 0.2,
+                                            'dashArray': '5,5'
+                                        },
 
-                                            highlight_function=lambda x: {
-                                                'fillOpacity': 1},
+                                        highlight_function=lambda x: {
+                                            'fillOpacity': 1},
 
-                                            tooltip=folium.features.Tooltip(All_Blocks.iloc[i]['Block_Name'], sticky=False))
-                                                # fields=All_Blocks.iloc[i]['Block_Name'], aliases=['Name']))
-            
-            geo_json.add_child(folium.Popup(make_popup(All_Blocks.iloc[i])))
-            return (geo_json.add_to(map1))
-    load_map(df_ = df_filter)
+                                        tooltip=folium.features.Tooltip(All_Blocks.iloc[i]['Block_Name'], sticky=False))
+                                            # fields=All_Blocks.iloc[i]['Block_Name'], aliases=['Name']))
+        
+        geo_json.add_child(folium.Popup(make_popup(All_Blocks.iloc[i])))
+        (geo_json.add_to(map1))
 
     folium_static(map1, width=1350, height=800)
