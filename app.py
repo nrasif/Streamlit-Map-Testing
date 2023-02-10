@@ -299,7 +299,6 @@ with display:
     df_filter = filter_by_name(option_block_,option_block)
     
     # Adding blocks to the main map
-    @st.cache(allow_output_mutation=True)
     def load_map(df_):
         for i, row in df_.iterrows():
             geo_json = folium.features.GeoJson(row.geometry.__geo_interface__, name=str(i), 
