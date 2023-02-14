@@ -26,6 +26,8 @@ import streamlit_nested_layout
 
 # Dataset
 All_Blocks = gpd.read_file(r'GeoJSON Files/All_Blocks.geojson')
+All_Boreholes = gpd.read_file(r'GeoJSON Files/All_Boreholes.geojson')
+
 
 # calculate the center of map
 bounds = All_Blocks.total_bounds
@@ -103,7 +105,7 @@ button[title="View fullscreen"]{
 '''
 st.markdown(hide_img_fs, unsafe_allow_html=True)
 
-# styling on tables pop up
+# styling on tables pop up for Blocks
 def make_popup(df):
     blockname = df["Block_Name"]
     status = df["Status"]
@@ -147,6 +149,62 @@ def make_popup(df):
     """
     return html
 
+# styling on tables pop up for Boreholes
+def make_popup_2(df):
+    borehole = df["Borehole_I"]
+    depth = df["Depth"]
+    lithology = df["Lithology"]
+    porosity = df["Porosity"]
+    fluid_sat = df["Fluid_Satu"]
+    oil_shows = df["Oil_shows"]
+    gas_shows = df["Gas_shows"]
+    blockname = df["Blocks"]
+
+        
+    left_col_color = "#65b3d0"
+    right_col_color = "#ebf2f7"
+    
+    html = """
+    <!DOCTYPE html>
+    <html>
+    
+    <head>
+    <strong><h4 style="margin-bottom:30px; width:200px; font-size: 25px;">{}</strong></h4>""".format(borehole) + """
+
+    
+    </head>
+        <table style="height: 126px; width: 300px;">
+    <tbody>
+    <tr>
+    <td style="background-color: """ + left_col_color + """;"><span style="color: #151515;">Depth (m)</span></td>
+    <td style="width: 200px;background-color: """ + right_col_color + """;">{}</td>""".format(depth) + """
+    </tr>
+    <tr>
+    <td style="background-color: """ + left_col_color + """;"><span style="color: #151515;">Lithology</span></td>
+    <td style="width: 200px;background-color: """ + right_col_color + """;">{}</td>""".format(lithology) + """
+    </tr>
+    <tr>
+    <td style="background-color: """ + left_col_color + """;"><span style="color: #151515;">Porosity</span></td>
+    <td style="width: 200px;background-color: """ + right_col_color + """;">{}</td>""".format(porosity) + """
+    </tr>
+    <tr>
+    <td style="background-color: """ + left_col_color + """;"><span style="color: #151515;">Fluid Saturation (%)</span></td>
+    <td style="width: 200px;background-color: """ + right_col_color + """;">{}</td>""".format(fluid_sat) + """
+    </tr>
+    <tr>
+    <td style="background-color: """ + left_col_color + """;"><span style="color: #151515;">Oil Shows (%)</span></td>
+    <td style="width: 200px;background-color: """ + right_col_color + """;">{}</td>""".format(oil_shows) + """
+    </tr>
+    <tr>
+    <td style="background-color: """ + left_col_color + """;"><span style="color: #151515;">Gas Shows (%)</span></td>
+    <td style="width: 200px;background-color: """ + right_col_color + """;">{}</td>""".format(gas_shows) + """
+    </tr>
+    </tbody>
+    </table>
+    </html>
+    """
+    return html
+
 text, display = st.columns([1,4])
 with text:
     block_title = '<p style="color:#65b3d0; font-size: 45px;"><strong>Dummy Blocks </strong> </p>'
@@ -161,7 +219,7 @@ with text:
     st.markdown('<p class="other-font"> &nbsp; </p>',
                 unsafe_allow_html=True)
 
-    tab1, tab2, tab3 = st.tabs(['Info', 'Filter', 'Download'])
+    tab1, tab2, tab3, tab4 = st.tabs(['Info', 'Blocks Filter', 'Wellhead Filter', 'Download'])
 
     with tab1:
         
@@ -217,7 +275,10 @@ with text:
         st.button('Get PDF files for more information')
         
     with tab2:
-
+        
+        #filter for blocks
+        st.markdown('**Blocks**')
+        
         with st.expander('Block name'):
             option_block = st.multiselect('Select the block name',   (All_Blocks['Block_Name']), default=All_Blocks['Block_Name'], label_visibility='collapsed')
             option_block_ = All_Blocks[All_Blocks['Block_Name'].isin(option_block)]
@@ -253,8 +314,86 @@ with text:
                                     label_visibility='collapsed')
         
             option_block_ = option_block_[option_block_['Sq. Kilometers'] <= option_kilos]
+        
+        st.markdown('<p class="big-font"> &nbsp; </p>',
+        unsafe_allow_html=True)
     
-    with tab3:
+    with tab3:    
+        #filter for boreholes
+        
+        #borehole = df["Borehole_I"]
+        #depth = df["Depth"]
+        #lithology = df["Lithology"]
+        #porosity = df["Porosity"]
+        #fluid_sat = df["Fluid_Satu"]
+        #oil_shows = df["Oil_shows"]
+        #gas_shows = df["Gas_shows"]
+        #blockname = df["Blocks"]
+        
+        st.markdown('**Boreholes**')
+        
+        with st.expander('Boreholes'):
+            option_bh = st.multiselect('Select the borehole',   (All_Boreholes['Borehole_I']), default=All_Boreholes['Borehole_I'], label_visibility='collapsed')
+            option_bh_ = All_Boreholes[All_Boreholes['Borehole_I'].isin(option_bh)]
+        
+        st.markdown('<p class="big-font"> &nbsp; </p>',
+        unsafe_allow_html=True)
+        
+        with st.expander('Depth in Meters'):
+            st.markdown('<p class="big-font"> &nbsp; </p>',
+                        unsafe_allow_html=True)
+            option_depth = st.slider('Depth of borehole', float(0.0), float(option_bh_['Depth'].max() + 500), float(option_bh_['Depth'].max()), 
+                                    label_visibility='collapsed')
+        
+            option_bh_ = option_bh_[option_bh_['Depth'] <= option_depth]
+        
+        st.markdown('<p class="big-font"> &nbsp; </p>',
+        unsafe_allow_html=True)
+            
+        with st.expander('Lithology'):
+            option_lith = st.multiselect('Lithology',   (option_bh_['Lithology']).unique(), default=option_bh_['Lithology'].unique(), label_visibility='collapsed')
+            option_bh_ = option_bh_[option_bh_['Lithology'].isin(option_lith)]
+        
+        st.markdown('<p class="big-font"> &nbsp; </p>',
+        unsafe_allow_html=True)
+            
+        with st.expander('Porosity in %'):
+            st.markdown('<p class="big-font"> &nbsp; </p>',
+                        unsafe_allow_html=True)
+            option_poro = st.slider('Porosity in %', float(0.0), float(100), float(option_bh_['Porosity'].max()), 
+                                    label_visibility='collapsed')
+        
+            option_bh_ = option_bh_[option_bh_['Porosity'] <= option_poro]
+        
+        st.markdown('<p class="big-font"> &nbsp; </p>',
+        unsafe_allow_html=True)
+        
+        with st.expander('Fluid Saturation in %'):
+            st.markdown('<p class="big-font"> &nbsp; </p>',
+                        unsafe_allow_html=True)
+            option_fluidst = st.slider('Fluid Saturation in %', float(0.0), float(option_bh_['Fluid_Satu'].max() + 10), float(option_bh_['Fluid_Satu'].max()), 
+                                        label_visibility='collapsed')
+        
+            option_bh_ = option_bh_[option_bh_['Fluid_Satu'] <= option_fluidst]
+        
+        st.markdown('<p class="big-font"> &nbsp; </p>',
+        unsafe_allow_html=True)
+            
+        with st.expander('Oil Shows'):
+            option_oilsh = st.multiselect('Oil Shows',   (option_bh_['Oil_shows']).unique(), default=option_bh_['Oil_shows'].unique(), label_visibility='collapsed')
+            option_bh_ = option_bh_[option_bh_['Oil_shows'].isin(option_oilsh)]
+        
+        st.markdown('<p class="big-font"> &nbsp; </p>',
+        unsafe_allow_html=True)
+        
+        with st.expander('Gas Shows'):
+            option_gassh = st.multiselect('Gas Shows',   (option_bh_['Gas_shows']).unique(), default=option_bh_['Gas_shows'].unique(), label_visibility='collapsed')
+            option_bh_ = option_bh_[option_bh_['Gas_shows'].isin(option_gassh)]
+        
+        st.markdown('<p class="big-font"> &nbsp; </p>',
+        unsafe_allow_html=True)
+        
+    with tab4:
         @st.cache
         def convert_csv(df):
             return df.to_csv().encode('utf-8')
@@ -292,14 +431,21 @@ with display:
     plugins.Draw(position='topright').add_to(map1)
     
     
-    def filter_by_name(df, parameter):
+    # filter name blocks for showings
+    def filter_by_name_blocks(df, parameter):
         return df[df['Block_Name'].isin(parameter)]
+
+    # filter name boreholes for showings   
+    def filter_by_name_boreholes(df, parameter):
+        return df[df['Borehole_I'].isin(parameter)]
+    
+    
     
     # option_block = st.multiselect('Select the block name', (All_Blocks['Block_Name']), default=All_Blocks['Block_Name'])
-    df_filter = filter_by_name(option_block_,option_block)
-    
+    df_filter_blocks = filter_by_name_blocks(option_block_, option_block)
+
     # Adding blocks to the main map
-    for i, row in df_filter.iterrows():
+    for i, row in df_filter_blocks.iterrows():
         geo_json = folium.features.GeoJson(row.geometry.__geo_interface__, name=str(i), 
                                             style_function=
                                             lambda feature: {
@@ -320,4 +466,19 @@ with display:
         geo_json.add_child(folium.Popup(make_popup(All_Blocks.iloc[i])))
         (geo_json.add_to(map1))
 
+    # option_bh = st.multiselect('Select the borehole',   (All_Boreholes['Borehole_I'])
+    df_filter_boreholes = filter_by_name_boreholes(option_bh_, option_bh)
+    
+    # Adding boreholes to the main map
+    for j, row in df_filter_boreholes.iterrows():
+        geo_json = folium.features.GeoJson(row.geometry.__geo_interface__, name=str(j), 
+                                            # icon=folium.Icon( icon='glyphicon-pushpin'),
+
+                                            tooltip=folium.features.Tooltip(All_Boreholes.iloc[j]['Borehole_I'], sticky=False))
+                                            # fields=All_Boreholes.iloc[j]['Borehole_I'], aliases=['Name']))
+        
+        geo_json.add_child(folium.Popup(make_popup_2(All_Boreholes.iloc[j])))
+        (geo_json.add_to(map1))
+    
+                                                   
     folium_static(map1, width=1350, height=800)
